@@ -7,16 +7,17 @@ const todoControl = document.querySelector('.todo-control'),
 	headerButton = document.querySelector('.header-button');
 
 let todoData = [];
-
 const checkToDo = function(){
-	let info = JSON.parse(localStorage.getItem('toDo'));
+	const info = JSON.parse(localStorage.getItem('toDo')) || [];
 
-	if(info){
-		todoData = info;
-	}
+	todoData = info;
 };
-
 checkToDo();
+
+const jsonFunc = function(){
+	let	json = JSON.stringify(todoData);
+	localStorage.toDo = json;
+};
 
 const render = function() {
 	todoList.textContent = '';
@@ -43,12 +44,13 @@ const render = function() {
 
 		btnToDoComplete.addEventListener('click', function(){
 			item.completed = !item.completed;
-
+			jsonFunc();
 			render();
 		});
 
 		btnToDoRemove.addEventListener('click', function(){
-			todoData.splice(index);
+			todoData.splice(index,1);
+			jsonFunc();
 			render();
 		});
 	});
@@ -62,11 +64,10 @@ todoControl.addEventListener('submit', function(event){
 		completed: false
 	};
 
-	if(headerInput.value !== ''){
+	if(headerInput.value.trim() !== ''){
 		todoData.push(newTodo);
 
-		let	json = JSON.stringify(todoData);
-		localStorage.toDo = json;
+		jsonFunc();
 	}
 	
 	headerInput.value = '';
